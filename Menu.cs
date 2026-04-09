@@ -26,6 +26,8 @@
 
         public void Execute()
         {
+            Console.Clear();
+
             if (IsLeafMenu())
             {
                 Action?.Invoke();
@@ -48,15 +50,16 @@
 
         private void HandleUserChoice()
         {
-            Console.Write("Välj ett alternativ: ");
+            Console.Write("\nVälj ett alternativ: ");
             if (int.TryParse(Console.ReadLine(), out int choice) && choice > 0 && choice <= SubMenus.Count)
             {
                 SubMenus[choice - 1].Execute();
             }
             else
             {
-                Console.WriteLine("Ogiltigt val, försök igen.");
-                DisplayMenu();
+                Console.Write("\nOgiltigt val, försök igen");
+                Console.ReadKey();
+                Execute();
             }
         }
     }
