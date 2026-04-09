@@ -64,10 +64,99 @@ namespace Labb1_LINQ
             using (var context = new EStoreContext())
             {
                 var total = context.Orders
-                    .Where(o => o.OrderDate < DateTime.Now.AddDays(-30))
+                    .Where(o => o.OrderDate >= DateTime.Now.AddDays(-31))
                     .Sum(o => o.TotalAmount);
 
-                Console.WriteLine($"Totalt ordervärde senaste månaden: {total}");
+                Console.WriteLine($"Totalt ordervärde senaste månaden: {total} kr\n");
+            }
+        }
+
+        internal static void DisplayMostSoldProducts()
+        {
+            using (var context = new EStoreContext())
+            {
+                var topProducts = context.OrderDetails
+                    .GroupBy(od => od.Product)
+                    .Select(g => new
+                    {
+                        g.Key.Name,
+                        TotalQuantitySold = g.Sum(od => od.Quantity)
+                    })
+                    .OrderByDescending(p => p.TotalQuantitySold)
+                    .Take(3)
+                    .ToList();
+
+                foreach (var product in topProducts)
+                {
+                    Console.WriteLine($"Produkt: {product.Name}\n" +
+                        $"Sålda enheter: {product.TotalQuantitySold}\n");
+                }
+            }
+        }
+
+        internal static void DisplayProductAmountsForEachCategory()
+        {
+            using (var context = new EStoreContext())
+            {
+                var categories = context.Categories
+                    .Select(c => new
+                    {
+                        c.Name,
+                        ProductAmount = c.Products.Count()
+                    })
+                    .ToList();
+
+                foreach (var category in categories)
+                {
+                    Console.WriteLine($"Kategori: {category.Name}\n" +
+                        $"Produkter: {category.ProductAmount}\n");
+                }
+            }
+        }
+
+        internal static void DisplayExpensiveOrders()
+        {
+            using (var context = new EStoreContext())
+            {
+                var expensiveOrders = context.Orders
+                    .Where(o => o.TotalAmount > 1000)
+                    .Select(o => new
+                    {
+                        o.Customer.Name,
+                        o.Customer.Email,
+                        o.Customer.Phone,
+                        o.Customer.Address,
+                        o.OrderDate,
+                        o.TotalAmount,
+                        o.Status,
+                        OrderDetails = o.OrderDetails
+                        .Select(od => new
+                        {
+                            od.Product.Name,
+                            od.Quantity,
+                            od.UnitPrice,
+                        })
+                        .ToList()
+                    })
+                    .ToList();
+
+                foreach (var order in expensiveOrders)
+                {
+                    Console.WriteLine($"Kund: {order.Name}\n" +
+                        $"Email: {order.Email}\n" +
+                        $"Tel: {order.Phone}\n" +
+                        $"Adress: {order.Address}\n" +
+                        $"Orderdatum: {order.OrderDate}\n" +
+                        $"Status: {order.Status}\n" +
+                        $"Totalt: {order.TotalAmount} kr\n");
+
+                    foreach (var detail in order.OrderDetails)
+                    {
+                        Console.WriteLine($"Produkt: {detail.Name}\n" +
+                            $"Antal: {detail.Quantity}\n" +
+                            $"Pris per enhet: {detail.UnitPrice} kr\n");
+                    }
+                }
             }
         }
     }
