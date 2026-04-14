@@ -15,8 +15,7 @@ namespace Labb1_LINQ
                     {
                         p.Name,
                         p.Price
-                    })
-                    .ToList();
+                    });
 
                 foreach (var electronic in electronics)
                 {
@@ -41,10 +40,8 @@ namespace Labb1_LINQ
                             p.Name,
                             p.StockQuantity
                         })
-                        .ToList()
                     })
-                    .Where(s => s.Products.Count > 0)
-                    .ToList();
+                    .Where(s => s.Products.Count() > 0);
 
                 foreach (var supplier in suppliers)
                 {
@@ -76,19 +73,18 @@ namespace Labb1_LINQ
             using (var context = new EStoreContext())
             {
                 var topProducts = context.OrderDetails
-                    .GroupBy(od => od.Product)
+                    .GroupBy(od => od.Product.Name)
                     .Select(g => new
                     {
-                        g.Key.Name,
+                        g.Key,
                         TotalQuantitySold = g.Sum(od => od.Quantity)
                     })
                     .OrderByDescending(p => p.TotalQuantitySold)
-                    .Take(3)
-                    .ToList();
+                    .Take(3);
 
                 foreach (var product in topProducts)
                 {
-                    Console.WriteLine($"Produkt: {product.Name}\n" +
+                    Console.WriteLine($"Produkt: {product}\n" +
                         $"Sålda enheter: {product.TotalQuantitySold}\n");
                 }
             }
@@ -102,9 +98,8 @@ namespace Labb1_LINQ
                     .Select(c => new
                     {
                         c.Name,
-                        ProductAmount = c.Products.Count()
-                    })
-                    .ToList();
+                        ProductAmount = c.Products.Count
+                    });
 
                 foreach (var category in categories)
                 {
@@ -136,9 +131,7 @@ namespace Labb1_LINQ
                             od.Quantity,
                             od.UnitPrice,
                         })
-                        .ToList()
-                    })
-                    .ToList();
+                    });
 
                 foreach (var order in expensiveOrders)
                 {

@@ -6,8 +6,7 @@
 
         static void Main(string[] args)
         {
-            var menus = new List<Menu>
-            {
+            Menu menu =
                 new("Huvudmeny",
                 [
                     new("Visa produkter i elektronikkategorin", EStoreQueries.DisplayElectronicsByPrice),
@@ -17,12 +16,11 @@
                     new("Visa produktmängd för varje kategori", EStoreQueries.DisplayProductAmountsForEachCategory),
                     new("Visa de dyraste ordrarna", EStoreQueries.DisplayExpensiveOrders),
                     new("Avsluta programmet", () => _isRunning = false),
-                ])
-            };
+                ]);
 
             while (_isRunning)
             {
-                menus[0].Execute();
+                menu.Execute();
 
                 if (_isRunning)
                 {
